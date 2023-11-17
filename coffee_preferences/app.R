@@ -29,8 +29,11 @@ ui <- fluidPage(
     mainPanel(
       tabsetPanel(
         tabPanel("Demographics",
+          selectInput("selectColour1", label = h5("Select plot colour"), 
+                      choices = c("darkgrey","bisque3","darkseagreen4", "cadetblue", "deepskyblue4"), 
+                      selected = "darkseagreen4"),
           h3("Participant Demographics", style = "font-family: helvetica"),
-          h4("What is your age?", style = "font-family: helvetica"),
+          h4("Age", style = "font-family: helvetica"),
           plotOutput("age"),
           br(),
           h4("Gender"),
@@ -38,6 +41,9 @@ ui <- fluidPage(
         ),
         tabPanel("Coffee Habits and Preferences",
           fluidRow(
+            selectInput("selectColour2", label = h5("Select plot colour"), 
+                        choices = c("darkgrey","bisque3","darkseagreen4", "cadetblue", "deepskyblue4"), 
+                        selected = "darkseagreen4"),
             h3("Cofee-Drinking Habits and Preferences", style = "font-family: helvetica"),
             p("Participants were asked a few questions about their coffee drinking habits and preferences. Plot the results below.")
           ),
@@ -53,7 +59,7 @@ ui <- fluidPage(
                              "`How much caffeine do you like in your coffee?`"
                              ),
                            selected = "`How many cups of coffee do you typically drink per day?`"),
-              style = "border:2px solid darkseagreen"
+              style = "border:2px solid black"
             ),
             column(8,
               plotOutput("preference")
@@ -67,9 +73,12 @@ ui <- fluidPage(
         tabPanel("Taste Test",
           fluidRow(
             h3("Taste Test Results", style = "font-family: helvetica"),
-            selectInput("selectColour", label = h3("Select plot colour"), 
+            selectInput("selectColour3", label = h5("Select plot colour"), 
                         choices = c("darkgrey","bisque3","darkseagreen4", "cadetblue", "deepskyblue4"), 
                         selected = "darkseagreen4"),
+            selectInput("selectGender", label = h5("Filter for participant gender"), 
+                        choices = c("All","Male", "Female", "Other (please specify)", "Non-binary"), 
+                        selected = "All"),
             h4("Overall Preference", style = "font-family: helvetica"),
             p("Out of coffees A-D, participants were asked to identify their favourite one. The plot below shows how many participants chose each coffee as their faviourite.", style = "font-family: helvetica"),
             plotOutput("overallPref"),
@@ -99,7 +108,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$age <- renderPlot({
     data %>% ggplot(aes(`What is your age?`)) +
-      geom_bar(fill = "darkseagreen4") +
+      geom_bar(fill = input$selectColour1) +
       ylab("Number of participants") +
       xlab("Age") +
       theme_minimal(base_size = 14) +
@@ -109,7 +118,7 @@ server <- function(input, output) {
   
   output$gender <- renderPlot({
     data %>% ggplot(aes(Gender)) +
-      geom_bar(fill = "darkseagreen3") +
+      geom_bar(fill = input$selectColour1) +
       ylab("Number of participants") +
       xlab("Gender") +
       theme_minimal(base_size = 14) +
@@ -119,7 +128,7 @@ server <- function(input, output) {
   
   output$preference <- renderPlot({
     ggplot(data, aes_string(input$prefPlot)) +
-      geom_bar(fill = "darkseagreen4") +
+      geom_bar(fill = input$selectColour2) +
       ylab("Number of participants") +
       theme_minimal(base_size = 14) +
       theme(panel.grid.minor = element_blank()) +
@@ -128,15 +137,26 @@ server <- function(input, output) {
   
   output$expertise <- renderPlot({
     ggplot(data = subset(data, !is.na(`Lastly, how would you rate your own coffee expertise?`)), aes(`Lastly, how would you rate your own coffee expertise?`, na.rm = TRUE)) +
-      geom_bar(fill = "darkseagreen3") +
+      geom_bar(fill = input$selectColour2) +
       ylab("Number of participants") +
+      xlab("Level of coffee expertise") +
       theme_minimal(base_size = 14) +
       theme(panel.grid.minor = element_blank()) 
   })
   
+  data3 <- reactive({
+    if (input$selectGender == "All"){
+      data
+    }
+    else {
+      data %>%
+        filter(Gender == input$selectGender)
+    }
+  })
+  
   output$overallPref <- renderPlot({
-    ggplot(data = subset(data, !is.na(`Lastly, what was your favorite overall coffee?`)), aes(`Lastly, what was your favorite overall coffee?`)) +
-      geom_bar(fill = input$selectColour) +
+    ggplot(data = subset(data3(), !is.na(`Lastly, what was your favorite overall coffee?`)), aes(`Lastly, what was your favorite overall coffee?`)) +
+      geom_bar(fill = input$selectColour3) +
       ylab("Number of participants") +
       xlab("Favourite overall coffee") +
       theme_minimal(base_size = 14) +
@@ -145,8 +165,8 @@ server <- function(input, output) {
   })
   
   output$roastPref <- renderPlot({
-    ggplot(data = subset(data, !is.na(`Between Coffee A, Coffee B, and Coffee C which did you prefer?`)), aes(`Between Coffee A, Coffee B, and Coffee C which did you prefer?`)) +
-      geom_bar(fill = input$selectColour) +
+    ggplot(data = subset(data3(), !is.na(`Between Coffee A, Coffee B, and Coffee C which did you prefer?`)), aes(`Between Coffee A, Coffee B, and Coffee C which did you prefer?`)) +
+      geom_bar(fill = input$selectColour3) +
       ylab("Number of participants") +
       xlab("Roast preference") +
       theme_minimal(base_size = 14) +
@@ -155,8 +175,8 @@ server <- function(input, output) {
   })
   
   output$processPref <- renderPlot({
-    ggplot(data = subset(data, !is.na(`Between Coffee A and Coffee D, which did you prefer?`)), aes(`Between Coffee A and Coffee D, which did you prefer?`)) +
-      geom_bar(fill = input$selectColour) +
+    ggplot(data = subset(data3(), !is.na(`Between Coffee A and Coffee D, which did you prefer?`)), aes(`Between Coffee A and Coffee D, which did you prefer?`)) +
+      geom_bar(fill = input$selectColour3) +
       ylab("Number of participants") +
       xlab("Process preference") +
       theme_minimal(base_size = 14) +

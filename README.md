@@ -13,8 +13,7 @@ File/Folder Name | Description
 -----------------|------------  
 .gitignore | File that tells Git which files to update  
 assignment-b3-lpuumala.Rproj | This R project
-coffee_preferences | Folder containing Shiny app (app.R) and image folder (www)  
-GACTT_RESULTS_ANONYMIZED_v2 | Data collected in James Hoffmann's Great American Coffee Taste Test  
+coffee_preferences | Folder containing Shiny app (app.R), image folder (www), dataset collected in James Hoffmann's Great American Coffee Taste Test (GACTT_RESULTS_ANONYMIZED_v2.csv), and rsconnect folder (for deploying app to shinyapps.io)
 README.md | This README file  
 
-A running instance of this Shiny app can be found here (ADD A LINK HERE!)
+A running instance of this Shiny app can be found at [https://lpuumala.shinyapps.io/coffee_preferences/](https://lpuumala.shinyapps.io/coffee_preferences/).

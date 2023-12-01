@@ -1,0 +1,12 @@
+name: coffee_preferences
+title: coffee_preferences
+username: lpuumala
+account: lpuumala
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 10575309
+bundleId: 7946571
+url: https://lpuumala.shinyapps.io/coffee_preferences/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

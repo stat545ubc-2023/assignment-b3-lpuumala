@@ -14,6 +14,8 @@ library(rlang)
 data <- read_csv(here::here("coffee_preferences", "GACTT_RESULTS_ANONYMIZED_v2.csv")) # use when running locally
 
 # Convert some variables top factors to make them easier to work with
+data$`What is your age?` <- as.factor(data$`What is your age?`)
+data$`What is your age?` <- factor(data$`What is your age?`, levels = c("<18 years old", "18-24 years old", "25-34 years old", "35-44 years old", "45-54 years old", "55-64 years old", ">65 years old"))
 data$`What is the most you've ever paid for a cup of coffee?` <- as.factor(data$`What is the most you've ever paid for a cup of coffee?`)
 data$`What is the most you've ever paid for a cup of coffee?` <- factor(data$`What is the most you've ever paid for a cup of coffee?`, levels = c("Less than $2", "$2-$4", "$4-$6", "$6-$8", "$8-$10", "$10-$15", "$15-$20", "More than $20"))
 data$`What is the most you'd ever be willing to pay for a cup of coffee?` <- as.factor(data$`What is the most you'd ever be willing to pay for a cup of coffee?`)
@@ -72,11 +74,46 @@ ui <- fluidPage(
                       choices = c("darkgrey","bisque3","darkseagreen4", "cadetblue", "deepskyblue4"), 
                       selected = "darkseagreen4"),
           h3("Participant Demographics"),
-          h4("Age"),
-          plotOutput("age"),
-          br(),
-          h4("Gender"),
-          plotOutput("gender")
+          fluidRow(
+            column(4,
+                   br(),
+                   #FEATURE ?: SELECT WHICH DEMOGRAPHICS DATA TO DISPLAY
+                   #[EXPLAIN PURPOSE] 
+                   radioButtons("demoPlot", "What would you like to plot?",
+                                choices = c(
+                                  "Gender" = "Gender", 
+                                  "Age" = "`What is your age?`", 
+                                  "Education level" = "`Education Level`", 
+                                  "Ethnicity/Race" = "`Ethnicity/Race`",
+                                  "Employment status" = "`Employment Status`",
+                                  "Number of Children" = "`Number of Children`",
+                                  "Political affiliation" = "`Political Affiliation`"),
+                                selected = "Gender"),
+                   style = "border:2px solid black"
+            ),
+            column(8,
+                   plotOutput("demographics"),
+                   br()
+            )),
+          
+          fluidRow(
+            column(12,
+                   h3("View the full dataset"))
+          ),
+          
+          fluidRow(
+            #FEATURE ?: INCLUDE DATA TABLE OF FULL DATASET WITH SOME FILTERING OPTIONS
+            #[ADD RATIONALE]
+            column(6,
+                   selectInput("gen",
+                               "Filter data by gender:",
+                               c("All", unique(data$Gender)))),
+            column(6,
+                   selectInput("age",
+                               "Filter data by age:",
+                               c("All", unique(as.character(data$`What is your age?`)))))
+          ),
+          DT::dataTableOutput("all_data")
         ),
         
         #TAB TO DISPLAY SOME OF THE COFFEE DRINKING HABITS AND PREFERENCES DATA
@@ -287,27 +324,29 @@ ui <- fluidPage(
 # Define server logic
 server <- function(input, output) {
   
-  #PLOT PARTICIPANT AGE DATA
-  output$age <- renderPlot({
-    data %>% ggplot(aes(`What is your age?`)) +
+  #PLOT DEMOGRAPHICS DATA
+  output$demographics <- renderPlot({
+    ggplot(data, aes_string(input$demoPlot)) +
       geom_bar(fill = input$selectColour1) +
       ylab("Number of participants") +
-      xlab("Age") +
       theme_minimal(base_size = 14) +
       theme(panel.grid.minor = element_blank()) +
       scale_x_discrete(guide = guide_axis(angle = 45))
   })
   
-  #PLOT PARTICIPANT GENDER DATA
-  output$gender <- renderPlot({
-    data %>% ggplot(aes(Gender)) +
-      geom_bar(fill = input$selectColour1) +
-      ylab("Number of participants") +
-      xlab("Gender") +
-      theme_minimal(base_size = 14) +
-      theme(panel.grid.minor = element_blank()) +
-      scale_x_discrete(guide = guide_axis(angle = 45))
-  })
+  #PLOT DATA TABLE OF ALL DATA
+  output$all_data <- DT::renderDataTable(DT::datatable({
+    df <- data
+    if (input$gen != "All") {
+      df <- df %>%
+        filter(Gender == input$gen)
+    }
+    if (input$age != "All") {
+      df <- df %>%
+        filter(`What is your age?` == input$age)
+    }
+    df
+  }))
   
   #PLOT THE COFFEE DRINKING HABITS/PREFERENCE DATA SELECTED BY THE USER
   output$preference <- renderPlot({

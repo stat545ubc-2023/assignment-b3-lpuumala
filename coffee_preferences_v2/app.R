@@ -130,14 +130,14 @@ ui <- fluidPage(
         # TAB TO DISPLAY SOME OF THE COFFEE DRINKING HABITS AND PREFERENCES DATA
         tabPanel("Coffee Habits and Preferences",
           fluidRow(
+            h3("Cofee-Drinking Habits and Preferences"),
+            p("Participants were asked a few questions about their coffee drinking habits and preferences. The results
+              are displayed on this tab."),
             # FEATURE 8: SELECT PLOT COLOUR
             # Same as above, but for coffee drinking habits and preferences tab
             selectInput("selectColour2", label = "Select plot colour", 
                         choices = c("darkgrey","bisque3","darkseagreen4", "cadetblue", "deepskyblue4"), 
-                        selected = "darkseagreen4"),
-            h3("Cofee-Drinking Habits and Preferences"),
-            p("Participants were asked a few questions about their coffee drinking habits and preferences. The results
-              are displayed on this tab.")
+                        selected = "darkseagreen4")
           ),
           
           fluidRow(
@@ -220,14 +220,14 @@ ui <- fluidPage(
         # TAB TO DISPLAY RESPONSES FOR QUESTIONS ABOUT MONEY SPENT ON COFFEE-RELATED THINGS
         tabPanel("Coffee-Related Expenses",
                  fluidRow(
+                   h3("Money spent on coffee-related items"),
+                   p("Participants were asked a few questions about how much money they spend on coffee and coffee-related items. 
+                     The responses are plotted below."),
                    # FEATURE 8: SELECT PLOT COLOUR
                    # Same as above, but for coffee expenses tab
                    selectInput("selectColour3", "Select plot colour", 
                                choices = c("darkgrey","bisque3","darkseagreen4", "cadetblue", "deepskyblue4"), 
                                selected = "darkseagreen4"),
-                   h3("Money spent on coffee-related items"),
-                   p("Participants were asked a few questions about how much money they spend on coffee and coffee-related items. 
-                     The responses are plotted below.")
                  ),
                  
                  fluidRow(

@@ -4,7 +4,6 @@
 library(shiny)
 library(tidyverse)
 library(shinythemes)
-library(rlang)
 
 # LOAD IN THE DATASET
 # This dataset is from James Hoffmann's Great American Taste Test.

@@ -5,7 +5,7 @@ account: lpuumala
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10719781
-bundleId: 8017321
+bundleId: 8017383
 url: https://lpuumala.shinyapps.io/coffee_preferences_v2/
 version: 1
 asMultiple: FALSE
